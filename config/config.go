@@ -3,8 +3,10 @@ package config
 import (
 	"errors"
 	"fmt"
+	"os"
 	"strconv"
 
+	logger "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -39,6 +41,18 @@ func AppName() string {
 
 /*AppPort Gives App PORT */
 func AppPort() int {
+	port := os.Getenv("PORT")
+	logger.Printf("ENV (%v)", port)
+	if port != "" {
+		appPort, err := strconv.Atoi(port)
+		logger.Printf("ERR (%v)", err)
+		if err == nil {
+			logger.Printf("AToi (%v)", port)
+			return appPort
+		}
+	}
+
+	logger.Printf("ReadEnvInt %v", port)
 	if appPort == 0 {
 		appPort = ReadEnvInt("APP_PORT")
 	}
