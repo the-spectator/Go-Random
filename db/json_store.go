@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"go_random/config"
 
 	logger "github.com/sirupsen/logrus"
 )
@@ -21,13 +22,13 @@ func (jStore *jsonStore) GetSwearWords(context.Context) (Words, error) {
 
 /*Init Json Store*/
 func Init() (s Storer, err error) {
-	safeWords, err := getWordsFromFile("words.json")
+	safeWords, err := getWordsFromFile(config.SafeWordFilePath())
 	if err != nil {
 		logger.WithField("err", err.Error()).Error("Error getting words from words json")
 		panic(err)
 	}
 
-	swearWords, err := getWordsFromFile("swear.json")
+	swearWords, err := getWordsFromFile(config.SwearWordFilePath())
 	if err != nil {
 		logger.WithField("err", err.Error()).Error("Error getting words from swear json")
 		panic(err)

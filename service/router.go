@@ -10,6 +10,7 @@ import (
 // 	versionHeader = "Accept"
 // )
 
+/*InitRouter initalizes the router */
 func InitRouter(dep Dependencies) (router *mux.Router) {
 	router = mux.NewRouter()
 

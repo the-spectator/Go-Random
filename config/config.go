@@ -9,8 +9,10 @@ import (
 )
 
 var (
-	appName string
-	appPort int
+	appName           string
+	appPort           int
+	safeWordFilePath  string
+	swearWordFilePath string
 )
 
 /*Load configuration variables */
@@ -51,6 +53,22 @@ func ReadEnvInt(key string) int {
 		panic(fmt.Sprintf("key %s is not a valid integer", key))
 	}
 	return v
+}
+
+/*SafeWordFilePath Gives SafeWordFilePath */
+func SafeWordFilePath() string {
+	if safeWordFilePath == "" {
+		safeWordFilePath = ReadEnvString("SAFE_WORD_FILE_PATH")
+	}
+	return safeWordFilePath
+}
+
+/*SwearWordFilePath Gives SafeWordFilePath */
+func SwearWordFilePath() string {
+	if swearWordFilePath == "" {
+		swearWordFilePath = ReadEnvString("SWEAR_WORD_FILE_PATH")
+	}
+	return swearWordFilePath
 }
 
 /*ReadEnvString reads environment variable as String*/
