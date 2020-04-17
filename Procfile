@@ -1,1 +1,1 @@
-web: go_random
+web: bin/go_random

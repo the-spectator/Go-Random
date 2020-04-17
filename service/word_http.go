@@ -22,7 +22,9 @@ type WordResponseStruct struct {
 }
 
 func wordHandler(dep Dependencies) http.HandlerFunc {
+	logger.Println("word Handler Intialized")
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		logger.Println("word Request Intialized")
 		if err := req.ParseForm(); err != nil {
 			logger.WithField("err", err.Error()).Error("Error parsing query string")
 			return
@@ -43,6 +45,7 @@ func wordHandler(dep Dependencies) http.HandlerFunc {
 		words, err := dep.Store.GetWords(req.Context(), limit, allowSwear)
 
 		if err != nil {
+			logger.WithError(err)
 			panic(err)
 		}
 
