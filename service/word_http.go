@@ -2,11 +2,24 @@ package service
 
 import (
 	"encoding/json"
+	"go_random/db"
 	"net/http"
 	"strconv"
 
 	logger "github.com/sirupsen/logrus"
 )
+
+/*ResponseStruct is our word Response struct*/
+type ResponseStruct struct {
+	Message string             `json:"message"`
+	Data    WordResponseStruct `json:"data"`
+}
+
+/*WordResponseStruct is our word Response struct*/
+type WordResponseStruct struct {
+	Words        db.Words `json:"words"`
+	WordsFetched int      `json:"words_fetched"`
+}
 
 func wordHandler(dep Dependencies) http.HandlerFunc {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
@@ -33,7 +46,12 @@ func wordHandler(dep Dependencies) http.HandlerFunc {
 			panic(err)
 		}
 
-		respBytes, err := json.Marshal(words)
+		response := ResponseStruct{
+			Data:    WordResponseStruct{Words: words, WordsFetched: len(words)},
+			Message: "Successfully Retrived the words",
+		}
+
+		respBytes, err := json.Marshal(response)
 		if err != nil {
 			logger.WithField("err", err.Error()).Error("Error marshalling ping response")
 			rw.WriteHeader(http.StatusInternalServerError)
