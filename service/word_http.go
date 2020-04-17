@@ -11,9 +11,11 @@ import (
 	logger "github.com/sirupsen/logrus"
 )
 
+/*Words is slice of string */
 type Words []string
 
-func getWordsFromFile(name string) (words Words, err error) {
+/*GetWordsFromFile gives Words */
+func GetWordsFromFile(name string) (words Words, err error) {
 	file, err := os.Open(name)
 	defer file.Close()
 
@@ -32,26 +34,11 @@ func shuffleWords(words Words) Words {
 	return words
 }
 
-func getWords(limit int, allowSwear bool) (words Words, err error) {
-	allWords := Words{}
+func (dep Dependencies) getWords(limit int, allowSwear bool) (words Words, err error) {
+	allWords := dep.SafeWords
 
 	if allowSwear == true {
-		var swearWords Words
-		swearWords, err = getWordsFromFile("swear.json")
-
-		if err != nil {
-			logger.WithField("err", err.Error()).Error("Error getting words from swear json")
-			return
-		}
-
-		allWords = append(allWords, swearWords...)
-	}
-
-	allWords, err = getWordsFromFile("words.json")
-
-	if err != nil {
-		logger.WithField("err", err.Error()).Error("Error getting words from words json")
-		return
+		allWords = append(allWords, dep.SwearWords...)
 	}
 
 	allWords = shuffleWords(allWords)
@@ -61,36 +48,38 @@ func getWords(limit int, allowSwear bool) (words Words, err error) {
 	return
 }
 
-func wordHandler(rw http.ResponseWriter, req *http.Request) {
-	if err := req.ParseForm(); err != nil {
-		logger.WithField("err", err.Error()).Error("Error parsing query string")
-		return
-	}
-
-	l := req.Form.Get("limit")
-	limit := 5
-	if l != "" {
-		var err error
-		limit, err = strconv.Atoi(l)
-		if err != nil {
-			logger.WithField("err", err.Error()).Error("Error converting limit params")
+func wordHandler(dep Dependencies) http.HandlerFunc {
+	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		if err := req.ParseForm(); err != nil {
+			logger.WithField("err", err.Error()).Error("Error parsing query string")
+			return
 		}
-	}
 
-	swear := req.Form.Get("swear")
-	allowSwear, _ := strconv.ParseBool(swear)
-	words, err := getWords(limit, allowSwear)
+		l := req.Form.Get("limit")
+		limit := 5
+		if l != "" {
+			var err error
+			limit, err = strconv.Atoi(l)
+			if err != nil {
+				logger.WithField("err", err.Error()).Error("Error converting limit params")
+			}
+		}
 
-	if err != nil {
-		panic(err)
-	}
+		swear := req.Form.Get("swear")
+		allowSwear, _ := strconv.ParseBool(swear)
+		words, err := dep.getWords(limit, allowSwear)
 
-	respBytes, err := json.Marshal(words)
-	if err != nil {
-		logger.WithField("err", err.Error()).Error("Error marshalling ping response")
-		rw.WriteHeader(http.StatusInternalServerError)
-	}
+		if err != nil {
+			panic(err)
+		}
 
-	rw.Header().Add("Content-Type", "application/json")
-	rw.Write(respBytes)
+		respBytes, err := json.Marshal(words)
+		if err != nil {
+			logger.WithField("err", err.Error()).Error("Error marshalling ping response")
+			rw.WriteHeader(http.StatusInternalServerError)
+		}
+
+		rw.Header().Add("Content-Type", "application/json")
+		rw.Write(respBytes)
+	})
 }

@@ -13,6 +13,7 @@ var (
 	appPort int
 )
 
+/*Load configuration variables */
 func Load() {
 	viper.SetDefault("APP_NAME", "app")
 	viper.SetDefault("APP_PORT", "8002")
@@ -26,6 +27,7 @@ func Load() {
 	viper.AutomaticEnv()
 }
 
+/*AppName Gives App Name */
 func AppName() string {
 	if appName == "" {
 		appName = ReadEnvString("APP_NAME")
@@ -33,6 +35,7 @@ func AppName() string {
 	return appName
 }
 
+/*AppPort Gives App PORT */
 func AppPort() int {
 	if appPort == 0 {
 		appPort = ReadEnvInt("APP_PORT")
@@ -40,6 +43,7 @@ func AppPort() int {
 	return appPort
 }
 
+/*ReadEnvInt reads environment variable as Int*/
 func ReadEnvInt(key string) int {
 	checkIfSet(key)
 	v, err := strconv.Atoi(viper.GetString(key))
@@ -49,11 +53,13 @@ func ReadEnvInt(key string) int {
 	return v
 }
 
+/*ReadEnvString reads environment variable as String*/
 func ReadEnvString(key string) string {
 	checkIfSet(key)
 	return viper.GetString(key)
 }
 
+/*ReadEnvBool reads environment variable as Boolean*/
 func ReadEnvBool(key string) bool {
 	checkIfSet(key)
 	return viper.GetBool(key)

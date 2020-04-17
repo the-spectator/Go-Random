@@ -20,8 +20,26 @@ func main() {
 
 	config.Load()
 
+	safeWords, err := service.GetWordsFromFile("words.json")
+	if err != nil {
+		logger.WithField("err", err.Error()).Error("Error getting words from words json")
+		panic(err)
+	}
+
+	swearWords, err := service.GetWordsFromFile("swear.json")
+	if err != nil {
+		logger.WithField("err", err.Error()).Error("Error getting words from swear json")
+		panic(err)
+	}
+
+	//declare dependency
+	deps := service.Dependencies{
+		SafeWords:  safeWords,
+		SwearWords: swearWords,
+	}
+
 	// mux router
-	router := service.InitRouter()
+	router := service.InitRouter(deps)
 
 	// init web server
 	server := negroni.Classic()
