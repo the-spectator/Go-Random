@@ -5,7 +5,7 @@ import (
 	"go_random/config"
 	"go_random/db"
 	"go_random/service"
-	"strconv"
+	"os"
 
 	"github.com/urfave/negroni"
 
@@ -39,8 +39,9 @@ func main() {
 	server := negroni.Classic()
 	server.UseHandler(router)
 
-	port := config.AppPort() // This can be changed to the service port number via environment variable.
-	addr := fmt.Sprintf(":%s", strconv.Itoa(port))
+	// port := config.AppPort() // This can be changed to the service port number via environment variable.
+	port := os.Getenv("PORT")
+	addr := fmt.Sprintf(":%s", port)
 
 	server.Run(addr)
 }
