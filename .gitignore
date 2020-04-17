@@ -1,0 +1,5 @@
+vendor
+application.yml
+coverage*
+out
+go_random
