@@ -42,7 +42,10 @@ func (jStore *jsonStore) GetWords(ctx context.Context, limit int, allowSwear boo
 	}
 
 	allWords = shuffleWords(allWords)
-	for i := 0; i < limit; i++ {
+	rand.Seed(time.Now().Unix())
+	index := rand.Intn(len(allWords) - limit)
+
+	for i, count := index, 0; i < len(allWords) && count < limit; i, count = i+1, count+1 {
 		words = append(words, allWords[i])
 	}
 	return
