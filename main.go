@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"go_random/config"
+	"go_random/db"
 	"go_random/service"
 	"strconv"
 
@@ -20,22 +21,15 @@ func main() {
 
 	config.Load()
 
-	safeWords, err := service.GetWordsFromFile("words.json")
+	store, err := db.Init()
 	if err != nil {
-		logger.WithField("err", err.Error()).Error("Error getting words from words json")
-		panic(err)
-	}
-
-	swearWords, err := service.GetWordsFromFile("swear.json")
-	if err != nil {
-		logger.WithField("err", err.Error()).Error("Error getting words from swear json")
+		logger.Fatal(err)
 		panic(err)
 	}
 
 	//declare dependency
 	deps := service.Dependencies{
-		SafeWords:  safeWords,
-		SwearWords: swearWords,
+		Store: store,
 	}
 
 	// mux router

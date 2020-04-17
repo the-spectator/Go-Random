@@ -1,7 +1,8 @@
 package service
 
+import "go_random/db"
+
 /*Dependencies of the random word generator */
 type Dependencies struct {
-	SafeWords  Words
-	SwearWords Words
+	Store db.Storer
 }
