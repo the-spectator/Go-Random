@@ -1,0 +1,4 @@
+APP_NAME: "go_random"
+APP_PORT: "3000"
+SAFE_WORD_FILE_PATH: "words.json"
+SWEAR_WORD_FILE_PATH: "swear.json"
